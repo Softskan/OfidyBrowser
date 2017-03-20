@@ -1,0 +1,59 @@
+<!-- Copyright 2014 ACR Development -->
+<android.support.design.widget.CoordinatorLayout android:id="@+id/coordinator_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.BrowserActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <android.support.v4.widget.DrawerLayout
+            android:id="@+id/drawer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
+
+            <LinearLayout
+                android:id="@+id/ui_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <include layout="@layout/toolbar"/>
+
+                <include layout="@layout/browser_content"/>
+
+                <include layout="@layout/search_interface"/>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/left_drawer"
+                android:layout_width="@dimen/navigation_width"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:background="?attr/drawerBackground"
+                android:fitsSystemWindows="true"
+                android:weightSum="1"/>
+
+            <FrameLayout
+                android:id="@+id/right_drawer"
+                android:layout_width="@dimen/navigation_width"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="?attr/drawerBackground"
+                android:fitsSystemWindows="true"
+                android:weightSum="1"/>
+
+        </android.support.v4.widget.DrawerLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorPrimary"
+        app:srcCompat="@drawable/ic_add_shopping_cart_white_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>
