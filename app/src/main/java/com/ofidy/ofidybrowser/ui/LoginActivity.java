@@ -100,6 +100,14 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
+    @OnClick(R.id.forgot_password)
+    protected void forgotPassword() {
+        Intent i = new Intent(this, ForgotActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
+        finish();
+    }
+
 
     @OnClick(R.id.sign_in_button)
     protected void attemptLogin() {
