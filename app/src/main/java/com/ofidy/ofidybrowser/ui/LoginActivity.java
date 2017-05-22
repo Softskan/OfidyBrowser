@@ -12,7 +12,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,10 +19,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.ofidy.ofidybrowser.BrowserApp;
 import com.ofidy.ofidybrowser.R;
+import com.ofidy.ofidybrowser.bus.LoadCustomerAddressEvent;
+import com.ofidy.ofidybrowser.bus.LoadShoppingCartEvent;
 import com.ofidy.ofidybrowser.pref.AppState;
 import com.ofidy.ofidybrowser.pref.UserPrefs;
 import com.ofidy.ofidybrowser.utils.ConfigHelper;
@@ -37,6 +37,8 @@ import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static com.ofidy.ofidybrowser.bus.BusProvider.getBus;
 
 /**
  * A login screen that offers login via email/password.
@@ -65,12 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        //getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_black_24dp);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if(getIntent().getExtras() != null) {
-            Bundle bundle = getIntent().getExtras();
-            //fromActivity = bundle.getBoolean(BundleKeys.FROM_ACTIVITY);
-        }
         mPasswordView.setOnEditorActionListener((textView, id, keyEvent) -> {
             if (id == R.id.login || id == EditorInfo.IME_NULL) {
                 attemptLogin();
@@ -133,6 +130,12 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(true);
             new LoginTask().execute(email, password);
         }
+    }
+
+    @OnClick(R.id.guest)
+    protected void guestLogin() {
+        showProgress(true);
+        new GuestLoginTask().execute();
     }
 
     private static boolean isValidEmail(String email) {
@@ -243,7 +246,7 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 JSONObject json = new JSONObject(result);
                 if (!json.getBoolean("error")) {
-                    //AppState.getInstance(LoginActivity.this).setBoolean(AppState.Key.LOGGED_IN, true);
+                    AppState.getInstance(LoginActivity.this).setBoolean(AppState.Key.LOGGED_IN, true);
                     UserPrefs prefs = UserPrefs.getInstance(LoginActivity.this);
                     prefs.setString(UserPrefs.Key.ID, json.getString("id"));
                     prefs.setString(UserPrefs.Key.EMAIL, json.getString("email"));
@@ -252,6 +255,78 @@ public class LoginActivity extends AppCompatActivity {
                     prefs.setString(UserPrefs.Key.CURRENCY, json.getString("currency"));
                     prefs.setString(UserPrefs.Key.FIRST_NAME, json.getString("firstName"));
                     prefs.setString(UserPrefs.Key.LAST_NAME, json.getString("lastName"));
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    getBus().post(new LoadShoppingCartEvent());
+                    getBus().post(new LoadCustomerAddressEvent(true));
+                    finish();
+                } else {
+                    showProgress(false);
+                    EditText errorView = mPasswordView;
+                    TextInputLayout errorLayout = inputLayoutPassword;
+                    errorView.requestFocus();
+                    errorLayout.setError(json.getString("message"));
+                }
+            }catch (Exception e){
+                Snackbar.make(mEmailView, "Internal application error", Snackbar.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class GuestLoginTask extends AsyncTask<String, String, String>{
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected String doInBackground(final String... params) {
+            result = null;
+            final String action = "guest";
+            try {
+                RequestBody formBody = new FormBody.Builder()
+                        .add("action", action)
+                        .add("code", "customer")
+                        .add("prf", "USD")
+                        .build();
+                Request request = new Request.Builder()
+                        .url(ConfigHelper.getConfigValue(LoginActivity.this, "api_url"))
+                        .post(formBody)
+                        .build();
+                Response response = BrowserApp.getOkHttpClient().newCall(request).execute();
+                result = response.body().string();
+                System.out.println("...........................................guest = "+result);
+                UserPrefs.getInstance(LoginActivity.this).setString(UserPrefs.Key.UNAME, params[0]);
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.d("APIPlug", "Error Occurred: " + e.getMessage());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            super.onPostExecute(result);
+            showProgress(false);
+            if(TextUtils.isEmpty(result)){
+                Snackbar.make(mEmailView, "Network error", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                JSONObject json = new JSONObject(result);
+                if (!json.getBoolean("error")) {
+                    AppState.getInstance(LoginActivity.this).setBoolean(AppState.Key.LOGGED_IN, true);
+                    UserPrefs prefs = UserPrefs.getInstance(LoginActivity.this);
+                    AppState.getInstance(LoginActivity.this).setBoolean(AppState.Key.GUEST, true);
+                    prefs.setString(UserPrefs.Key.ID, json.getString("id"));
+                    prefs.setString(UserPrefs.Key.SID, json.getString("sid"));
+                    prefs.setString(UserPrefs.Key.CURRENCY, json.getString("currency"));
+                    prefs.setString(UserPrefs.Key.EMAIL, "guest");
+                    prefs.setString(UserPrefs.Key.FIRST_NAME, "Guest");
+                    prefs.setString(UserPrefs.Key.LAST_NAME, "");
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);

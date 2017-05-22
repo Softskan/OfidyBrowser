@@ -17,6 +17,7 @@ public class AppState extends Prefs<AppState.Key> {
 
         public static final Key LOGGED_IN = new Key("logged_in", Boolean.class, false);
         public static final Key WELCOMED = new Key("welcome", Boolean.class, false);
+        public static final Key GUEST = new Key("guest", Boolean.class, false);
 
         /* package */ <T> Key(String str, Class<T> type, T defaultValue) {
             super(str, type, defaultValue);

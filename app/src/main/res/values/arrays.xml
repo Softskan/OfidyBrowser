@@ -51,4 +51,36 @@
         <item>@string/dark_theme</item>
         <item>@string/black_theme</item>
     </string-array>
+
+    <string-array name="address_type">
+        <item>Home</item>
+        <item>Office</item>
+        <item>School</item>
+        <item>Shop</item>
+        <item>Church</item>
+        <item>Mosque</item>
+    </string-array>
+
+    <string-array name="address_type_value">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
+    <string-array name="region">
+        <item>Select region</item>
+        <item>Nigeria</item>
+        <item>United Kingdom</item>
+        <item>United States</item>
+    </string-array>
+
+    <integer-array name="region_value">
+        <item>0</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+    </integer-array>
 </resources>

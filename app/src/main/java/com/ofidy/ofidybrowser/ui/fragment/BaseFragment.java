@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.crashlytics.android.Crashlytics;
+import com.ofidy.ofidybrowser.bus.BusProvider;
 import com.squareup.otto.Bus;
 
 import butterknife.ButterKnife;
@@ -18,6 +19,10 @@ import butterknife.ButterKnife;
 public abstract class BaseFragment extends Fragment {
 
     private static final String TAG = "BaseFragment";
+
+    protected Bus getBus() {
+        return BusProvider.getBus();
+    }
 
     @Nullable
     @Override
@@ -37,6 +42,7 @@ public abstract class BaseFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Crashlytics.log(Log.DEBUG, TAG, this.getClass().getName() + "#onResume()");
+        getBus().register(this);
     }
 
     @Override
@@ -55,6 +61,7 @@ public abstract class BaseFragment extends Fragment {
     public void onPause() {
         super.onPause();
         Crashlytics.log(Log.DEBUG, TAG, this.getClass().getName() + "#onPause()");
+        getBus().unregister(this);
     }
 
     @Override

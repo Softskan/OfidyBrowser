@@ -108,8 +108,6 @@
                 app:fb_defaultColor="@color/colorPrimary"
                 app:fb_focusColor="@color/colorPrimaryDark"/>
 
-
-
             <TextView
                 android:id="@+id/sign_up"
                 android:layout_width="wrap_content"
@@ -119,6 +117,25 @@
                 android:textAppearance="@style/TextAppearance"
                 android:layout_marginTop="24dp"
                 android:text="Don't have an account? Sign up"/>
+
+            <mehdi.sakout.fancybuttons.FancyButton
+                android:id="@+id/guest"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="16dp"
+                android:textStyle="bold"
+                app:fb_radius="2dp"
+                app:fb_iconPosition="left"
+                app:fb_fontIconSize="20sp"
+                app:fb_textGravity="center"
+                app:fb_iconPaddingRight="10dp"
+                app:fb_textSize="18sp"
+                app:fb_text="Login as Guest"
+                app:fb_textColor="@color/text_primary_inverted"
+                app:fb_defaultColor="@color/colorPrimary"
+                app:fb_focusColor="@color/colorPrimaryDark"/>
 
         </LinearLayout>
 

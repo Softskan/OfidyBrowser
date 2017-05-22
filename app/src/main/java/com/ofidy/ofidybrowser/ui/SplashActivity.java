@@ -23,17 +23,17 @@ public class SplashActivity extends AppCompatActivity {
         //setContentView(R.layout.activity_splash);
         new Handler().postDelayed(() -> {
             Intent i;
-            if(! AppState.getInstance(SplashActivity.this).getBoolean(AppState.Key.LOGGED_IN)){
+//            if(! AppState.getInstance(SplashActivity.this).getBoolean(AppState.Key.LOGGED_IN)){
                 i = new Intent(SplashActivity.this, LoginActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
-            }
-            else{
-                i = new Intent(SplashActivity.this, MainActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
-                refreshSession();
-            }
+//            }
+//            else{
+//                i = new Intent(SplashActivity.this, MainActivity.class);
+//                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(i);
+//                refreshSession();
+//            }
 
             finish();
         }, 2000);

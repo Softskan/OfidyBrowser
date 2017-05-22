@@ -45,6 +45,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -124,8 +125,6 @@ import com.ofidy.ofidybrowser.utils.Utils;
 import com.ofidy.ofidybrowser.utils.WebUtils;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -254,6 +253,7 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
         LayoutParams.MATCH_PARENT);
     private static final FrameLayout.LayoutParams COVER_SCREEN_PARAMS = new FrameLayout.LayoutParams(
         LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    private String colour = "";
 
     protected abstract boolean isIncognito();
 
@@ -483,9 +483,10 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
     }
 
     private void showSizeDialog(){
-        final LightningView currentTab = mTabsManager.getCurrentTab();
+        //final LightningView currentTab = mTabsManager.getCurrentTab();
         View v = getLayoutInflater().inflate(R.layout.product_quantity, null);
         final EditText inputQty = (EditText) v.findViewById(R.id.quantity);
+        inputQty.setHint("Size");
         v.findViewById(R.id.quantity_down).setOnClickListener(view -> {
             if(size > 1)
                 size -= 1;
@@ -504,12 +505,39 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
                     String s = inputQty.getText().toString().trim();
                     if(TextUtils.isDigitsOnly(s)) {
                         size = Integer.parseInt(s);
-                        new AddToCartTask().execute(currentTab.getUrl(), currentTab.getTitle());
-                        //getBus().post(new AddCartItemEvent(product, seller, qty, size));
+                        showColourDialog();
                     }
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> {
                     dialog.dismiss();
+                    showColourDialog();
+                })
+                .create();
+        alertDialog.setView(v);
+        alertDialog.show();
+    }
+
+    private void showColourDialog(){
+        final LightningView currentTab = mTabsManager.getCurrentTab();
+        View v = getLayoutInflater().inflate(R.layout.product_quantity, null);
+        final EditText inputQty = (EditText) v.findViewById(R.id.quantity);
+        v.findViewById(R.id.quantity_down).setVisibility(View.GONE);
+        v.findViewById(R.id.quantity_up).setVisibility(View.GONE);
+        inputQty.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        inputQty.setText("");
+        inputQty.setHint("Colour");
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setTitle("Colour?")
+                .setMessage("If colour applies to your item please write the colour you want. Else click cancel")
+                .setPositiveButton("Continue", (dialog, which) -> {
+                    String s = inputQty.getText().toString().trim();
+                    if(!TextUtils.isEmpty(s))
+                        colour = s;
+                    new AddToCartTask().execute(currentTab.getUrl(), currentTab.getTitle());
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    dialog.dismiss();
+                    new AddToCartTask().execute(currentTab.getUrl(), currentTab.getTitle());
                 })
                 .create();
         alertDialog.setView(v);
@@ -2026,11 +2054,12 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
 
     @Override
     public void onCartButtonPressed() {
-        final LightningView currentTab = mTabsManager.getCurrentTab();
-        if (currentTab != null) {
-            currentTab.loadUrl("https://m.ofidy.com/cart.php");
-            closeDrawers(null);
-        }
+//        final LightningView currentTab = mTabsManager.getCurrentTab();
+//        if (currentTab != null) {
+//            currentTab.loadUrl("https://m.ofidy.com/cart.php");
+//            closeDrawers(null);
+//        }
+        startActivity(new Intent(this, CartActivity.class));
     }
 
     /**
@@ -2382,23 +2411,24 @@ public abstract class BrowserActivity extends ThemableBrowserActivity implements
             progress.setMessage("Updating....");
             progress.setCancelable(false);
             progress.show();
-
         }
 
         @Override
         protected String doInBackground(final String... params) {
             String result = null;
-            final String action = "addBrowser";
             try {
+                System.out.println("..............................................................add to cart");
                 RequestBody formBody = new FormBody.Builder()
                         .add("user_id", UserPrefs.getInstance(BrowserActivity.this).getString(UserPrefs.Key.ID))
                         .add("session_id", UserPrefs.getInstance(BrowserActivity.this).getString(UserPrefs.Key.SID))
                         .add("quantity", String.valueOf(qty))
                         .add("size", String.valueOf(size))
-                        .add("colour", String.valueOf(size))
+                        .add("colour", colour)
                         .add("url", params[0])
                         .add("ttl", params[1])
                         .add("app", "android")
+                        .add("guestlogin", UserPrefs.getInstance(BrowserActivity.this).getString(UserPrefs.Key.EMAIL).
+                                equals("guest")? "1" : "0")
                         .build();
                 Request request = new Request.Builder()
                         .url(ConfigHelper.getConfigValue(BrowserActivity.this, "cart_url"))

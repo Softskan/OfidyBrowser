@@ -3,6 +3,8 @@ package com.ofidy.ofidybrowser.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -11,6 +13,10 @@ import android.view.MenuItem;
 
 import com.crashlytics.android.Crashlytics;
 import com.ofidy.ofidybrowser.R;
+import com.ofidy.ofidybrowser.bus.BusProvider;
+import com.ofidy.ofidybrowser.bus.InterntStatusChangedEvent;
+import com.ofidy.ofidybrowser.utils.ThemeUtils;
+import com.squareup.otto.Bus;
 
 import butterknife.ButterKnife;
 
@@ -29,20 +35,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected MenuItem signMenu;
     protected Toolbar toolbar;
     protected int badgeCount;
-
-//    protected Bus getBus() {
-//        return BusProvider.getBus();
-//    }
-
-//    protected Picasso getPicasso() {
-//        return BrowserApp.getInstance().getPicasso();
-//    }
+    private boolean connected = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Crashlytics.log(Log.DEBUG, TAG, this.getClass().getSimpleName() + "#onCreate()");
-        //getBus().register(this);
+        getBus().register(this);
     }
 
     protected void setLayout(int layoutResID) {
@@ -88,7 +87,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onDestroy();
         cartMenu = null;
         Crashlytics.log(Log.DEBUG, TAG, this.getClass().getSimpleName() + "#onDestroy()");
-        //getBus().unregister(this);
+        getBus().unregister(this);
     }
 
     @Override
@@ -115,7 +114,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void inflateCommonMenu(Menu menu){
-        searchMenu = menu.findItem(R.id.menu_search);
+        //searchMenu = menu.findItem(R.id.menu_search);
     }
 
 //    @Override
@@ -125,6 +124,25 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void openUrl(String url) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    }
+
+    protected void onInterntStatusChangedEvent(InterntStatusChangedEvent event) {
+        if(event.connected != connected) {
+            connected = event.connected;
+            if(!event.connected)
+                new Handler().postDelayed(() -> {
+                    Snackbar bar = null;
+                    Snackbar finalBar = bar;
+                    bar = Snackbar.make(toolbar, "No internet connection, app will not work properly", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("Dismiss", v -> finalBar.dismiss());
+
+                    bar.show();
+                }, 5000);
+        }
+    }
+
+    protected Bus getBus() {
+        return BusProvider.getBus();
     }
 
 }

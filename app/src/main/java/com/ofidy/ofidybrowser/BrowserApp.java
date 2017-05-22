@@ -13,15 +13,18 @@ import android.util.Log;
 import android.webkit.WebView;
 
 import com.crashlytics.android.Crashlytics;
+import com.ofidy.ofidybrowser.model.Cart;
 import com.ofidy.ofidybrowser.pref.UserPrefs;
 import com.ofidy.ofidybrowser.preference.PreferenceManager;
 import com.ofidy.ofidybrowser.utils.FileUtils;
 import com.ofidy.ofidybrowser.utils.MemoryLeakUtils;
+import com.ofidy.ofidybrowser.utils.ServerHelper;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.otto.Bus;
 
 import io.fabric.sdk.android.Fabric;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +50,7 @@ public class BrowserApp extends Application {
     PreferenceManager mPreferenceManager;
     private static OkHttpClient mOkHttpClient;
     private String currency;
+    public static ArrayList<Cart> cartItems;
     private static BrowserApp sInstance;
 
     @Override
@@ -54,6 +58,8 @@ public class BrowserApp extends Application {
         super.onCreate();
         sInstance = this;
         Fabric.with(this, new Crashlytics());
+        cartItems = new ArrayList<>();
+        new ServerHelper().start(this, getOkHttpClient());
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .detectAll()
@@ -110,6 +116,10 @@ public class BrowserApp extends Application {
         if(TextUtils.isEmpty(currency))
             return UserPrefs.getInstance(this).getString(UserPrefs.Key.CURRENCY);
         return currency;
+    }
+
+    public void setCurrency(String c){
+        currency = c;
     }
 
     @NonNull

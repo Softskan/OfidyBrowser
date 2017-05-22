@@ -75,8 +75,6 @@ public class RegisterActivity extends BaseActivity{
     View mProgressView;
     @Bind(R.id.login_form)
     View mLoginFormView;
-    @Bind(R.id.image)
-    ImageView imageView;
     @Bind(R.id.gender_male)
     RadioButton mMale;
     @Bind(R.id.gender_female)
@@ -128,13 +126,6 @@ public class RegisterActivity extends BaseActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if(!fromActivity){
-                    Intent i = new Intent(this, MainActivity.class);
-                    String transitionName = getString(R.string.splash_transition);
-
-                    ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, imageView, transitionName);
-                    ActivityCompat.startActivity(this, i, transitionActivityOptions.toBundle());;
-                }
                 finish();
                 return true;
         }
@@ -167,7 +158,7 @@ public class RegisterActivity extends BaseActivity{
         if(!mTermsView.isChecked()){
             focusView = mTermsView;
             cancel = true;
-            Snackbar.make(imageView, "You have to accept our terms and conditions to continue", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(mFirstNameView, "You have to accept our terms and conditions to continue", Snackbar.LENGTH_SHORT).show();
         }
         if (!validatePassword(password)) {
             focusView = mPasswordView;

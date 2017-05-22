@@ -23,7 +23,7 @@ public class Cart {
     private String promoCode;
     private int status;
     private String prodId;
-    private int blacklist;
+    //private int blacklist;
 
     public Cart(String prodId, String name, String weight, String currency, int quantity, double price){
         this.prodId = prodId;

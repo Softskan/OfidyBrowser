@@ -7,6 +7,7 @@ package com.ofidy.ofidybrowser.ui.view;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
@@ -42,6 +43,8 @@ import com.ofidy.ofidybrowser.database.BookmarkManager;
 import com.ofidy.ofidybrowser.download.LightningDownloadListener;
 import com.ofidy.ofidybrowser.pref.UserPrefs;
 import com.ofidy.ofidybrowser.preference.PreferenceManager;
+import com.ofidy.ofidybrowser.ui.BundleKeys;
+import com.ofidy.ofidybrowser.ui.CheckoutActivity;
 import com.ofidy.ofidybrowser.ui.dialog.LightningDialogBuilder;
 import com.ofidy.ofidybrowser.utils.EncodingUtils;
 import com.ofidy.ofidybrowser.utils.ProxyUtils;
@@ -159,6 +162,7 @@ public class LightningView {
         mWebView.setNetworkAvailable(true);
         mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
         mWebView.setWebViewClient(new LightningWebClient(activity, this));
+        mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mWebView.setDownloadListener(new LightningDownloadListener(activity));
         mGestureDetector = new GestureDetector(activity, new CustomGestureListener());
         mWebView.setOnTouchListener(new TouchListener());
@@ -168,13 +172,23 @@ public class LightningView {
 
         if (url != null) {
             if (!url.trim().isEmpty()) {
-                if (url.contains("ofidy.com")) {
-                    String postData = "postvar=value&postvar2=value2";
-                    System.out.println("got here inner.................................,..."+postData);
-                    mWebView.postUrl(url, EncodingUtils.getBytes(postData, "base64"));
-                }
-                else {
-                    System.out.println("got here outer.................................,...........");
+                try{
+                    if (url.contains("ofidy.com")) {
+                        mUIController.showAddToCartButton(false);
+                        String postData;
+                        postData = "user_id=" + URLEncoder.encode(UserPrefs.getInstance(mActivity).getString(UserPrefs.Key.ID), "UTF-8") +
+                                "&session_id=" + URLEncoder.encode(UserPrefs.getInstance(mActivity).getString(UserPrefs.Key.SID), "UTF-8") +
+                                "&currency=" + URLEncoder.encode(UserPrefs.getInstance(mActivity).getString(UserPrefs.Key.CURRENCY), "UTF-8") +
+                                "$guestlogin=" + (UserPrefs.getInstance(mActivity).getString(UserPrefs.Key.EMAIL).equals("guest") ? "1" : "0") +
+                                "&acctype=1$submit=1";
+                        mWebView.postUrl(url, postData.getBytes());
+                    }
+                    else {
+                        mWebView.loadUrl(url, mRequestHeaders);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    mUIController.showAddToCartButton(true);
                     mWebView.loadUrl(url, mRequestHeaders);
                 }
             } else {
@@ -1087,6 +1101,7 @@ public class LightningView {
                     postData = "user_id=" + URLEncoder.encode(UserPrefs.getInstance(mActivity).getString(UserPrefs.Key.ID), "UTF-8") +
                             "&session_id=" + URLEncoder.encode(UserPrefs.getInstance(mActivity).getString(UserPrefs.Key.SID), "UTF-8") +
                             "&currency=" + URLEncoder.encode(UserPrefs.getInstance(mActivity).getString(UserPrefs.Key.CURRENCY), "UTF-8") +
+                            "$guestlogin=" + (UserPrefs.getInstance(mActivity).getString(UserPrefs.Key.EMAIL).equals("guest") ? "1" : "0") +
                             "&acctype=1$submit=1";
                     mWebView.postUrl(url, postData.getBytes());
                 } else {

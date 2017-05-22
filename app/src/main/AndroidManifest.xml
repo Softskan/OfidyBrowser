@@ -44,6 +44,24 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.PaystackActivity"
+            android:theme="@style/MyTheme.NoActionBar" />
+        <activity
+            android:name=".ui.PaypalActivity"
+            android:theme="@style/MyTheme.NoActionBar" />
+        <activity
+            android:name=".ui.PayActivity"
+            android:theme="@style/MyTheme.NoActionBar" />
+        <activity
+            android:name=".ui.CheckoutActivity"
+            android:theme="@style/MyTheme.NoActionBar" />
+        <activity
+            android:name=".ui.CartActivity"
+            android:theme="@style/MyTheme.NoActionBar" />
+        <activity
+            android:name=".ui.AddressActivity"
+            android:theme="@style/MyTheme.NoActionBar" />
+        <activity
             android:name=".ui.LoginActivity"
             android:theme="@style/AppTheme" />
         <activity

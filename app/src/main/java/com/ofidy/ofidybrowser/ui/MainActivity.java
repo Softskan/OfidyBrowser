@@ -1,35 +1,18 @@
 package com.ofidy.ofidybrowser.ui;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.widget.EditText;
 
-import com.ofidy.ofidybrowser.BrowserApp;
 import com.ofidy.ofidybrowser.R;
 import com.anthonycr.bonsai.Action;
 import com.anthonycr.bonsai.Observable;
 import com.anthonycr.bonsai.Subscriber;
-import com.ofidy.ofidybrowser.pref.AppState;
-import com.ofidy.ofidybrowser.pref.UserPrefs;
-import com.squareup.otto.Subscribe;
-
-import org.json.JSONObject;
-
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends BrowserActivity {

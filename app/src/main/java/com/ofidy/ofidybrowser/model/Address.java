@@ -67,12 +67,28 @@ public class Address implements Parcelable {
         return addressLine3;
     }
 
+    public void setAddressLine1(String ad) {
+        addressLine1 = ad;
+    }
+
+    public void setAddressLine2(String ad) {
+        addressLine2 = ad;
+    }
+
+    public void setAddressLine3(String ad) {
+        addressLine3 = ad;
+    }
+
     public String getAddressDescription() {
         return addressDescription;
     }
 
     public String getCity() {
         return city;
+    }
+
+    public void setCity(String c) {
+        city = c;
     }
 
     public String getState() {
@@ -87,12 +103,20 @@ public class Address implements Parcelable {
         return country;
     }
 
+    public void setCountry(String c) {
+        country = c;
+    }
+
     public int getAddressType() {
         return addressType;
     }
 
     public String getPostcode() {
         return postcode;
+    }
+
+    public void setPostcode(String p) {
+        postcode = p;
     }
 
     public String getId() {
