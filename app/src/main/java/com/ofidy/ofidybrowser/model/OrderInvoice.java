@@ -23,6 +23,7 @@ public class OrderInvoice implements Parcelable {
     private double shipBill;
     private String currency;
     private String payMethod;
+    private double fullBill;
     //"productsBill":"151702.00","invoiceid":"16359","addr1":"45 Sura Mogaji Street","addr2":"Illupeju","addr3":"","city":"Lagos","state":"24","country":false,"country_sp":"NG","postcode":"123","shipBill":"18480.0","currency":"NGN","payMethod":"Simplepay"
 
     public OrderInvoice(Parcel in) {
@@ -39,6 +40,7 @@ public class OrderInvoice implements Parcelable {
         shipBill = in.readDouble();
         currency = in.readString();
         payMethod = in.readString();
+        fullBill = in.readDouble();
     }
 
     public static final Creator<OrderInvoice> CREATOR = new Creator<OrderInvoice>() {
@@ -73,6 +75,7 @@ public class OrderInvoice implements Parcelable {
         parcel.writeDouble(shipBill);
         parcel.writeString(currency);
         parcel.writeString(payMethod);
+        parcel.writeDouble(fullBill);
     }
 
     public String getInvoiceId(){
@@ -80,6 +83,8 @@ public class OrderInvoice implements Parcelable {
     }
 
     public Double getFullBill(){
+        if(fullBill > 0)
+            return fullBill;
         return productsBill + shipBill;
     }
 
