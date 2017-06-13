@@ -13,10 +13,13 @@ public class AddGuestAddressEvent {
     public final int addressType;
     public final boolean isPrimary;
     public final String email;
+    public final String fname;
+    public final String lname;
+    public final String phone;
 
     public AddGuestAddressEvent(String addrLine1, String addrLine2, String area, String city, String state,
                                 String country, String desc, String postcode, int addressType,
-                                boolean isPrimary, String email) {
+                                boolean isPrimary, String email, String fname, String lname, String phone) {
         this.addrLine1 = addrLine1;
         this.city = city;
         this.country = country;
@@ -28,6 +31,9 @@ public class AddGuestAddressEvent {
         this.addressType = addressType;
         this.isPrimary = isPrimary;
         this.email = email;
+        this.fname = fname;
+        this.lname = lname;
+        this.phone = phone;
     }
 
 }

@@ -21,6 +21,7 @@ import com.ofidy.ofidybrowser.bus.GetOrderCostErrorEvent;
 import com.ofidy.ofidybrowser.bus.GetOrderCostEvent;
 import com.ofidy.ofidybrowser.model.Address;
 import com.ofidy.ofidybrowser.ui.AddressActivity;
+import com.ofidy.ofidybrowser.ui.BundleKeys;
 import com.ofidy.ofidybrowser.ui.CheckoutActivity;
 import com.ofidy.ofidybrowser.utils.OfidyDB;
 import com.squareup.otto.Subscribe;
@@ -123,7 +124,10 @@ public class BillingFragment extends BaseFragment {
 
     private void addAddress(){
         Intent i = new Intent(getContext(), AddressActivity.class);
+        i.putExtra(BundleKeys.FROM_ACTIVITY, true);
+        i.putExtra(BundleKeys.CART_TOTAL, ((CheckoutActivity)getActivity()).total);
         startActivity(i);
+        getActivity().finish();
     }
 
     @OnClick(R.id.next)

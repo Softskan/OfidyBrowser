@@ -24,7 +24,6 @@ public class OrderInvoice implements Parcelable {
     private String currency;
     private String payMethod;
     private double fullBill;
-    //"productsBill":"151702.00","invoiceid":"16359","addr1":"45 Sura Mogaji Street","addr2":"Illupeju","addr3":"","city":"Lagos","state":"24","country":false,"country_sp":"NG","postcode":"123","shipBill":"18480.0","currency":"NGN","payMethod":"Simplepay"
 
     public OrderInvoice(Parcel in) {
         productsBill = in.readDouble();

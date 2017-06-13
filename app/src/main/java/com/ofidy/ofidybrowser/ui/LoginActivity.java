@@ -246,7 +246,6 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 JSONObject json = new JSONObject(result);
                 if (!json.getBoolean("error")) {
-                    AppState.getInstance(LoginActivity.this).setBoolean(AppState.Key.LOGGED_IN, true);
                     UserPrefs prefs = UserPrefs.getInstance(LoginActivity.this);
                     prefs.setString(UserPrefs.Key.ID, json.getString("id"));
                     prefs.setString(UserPrefs.Key.EMAIL, json.getString("email"));
@@ -255,6 +254,7 @@ public class LoginActivity extends AppCompatActivity {
                     prefs.setString(UserPrefs.Key.CURRENCY, json.getString("currency"));
                     prefs.setString(UserPrefs.Key.FIRST_NAME, json.getString("firstName"));
                     prefs.setString(UserPrefs.Key.LAST_NAME, json.getString("lastName"));
+                    AppState.getInstance(LoginActivity.this).setBoolean(AppState.Key.LOGGED_IN, true);
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);

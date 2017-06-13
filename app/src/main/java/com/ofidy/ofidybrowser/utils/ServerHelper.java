@@ -51,7 +51,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -682,6 +681,10 @@ public class ServerHelper {
                         .add("country", event.country)
                         .add("postcode", event.postcode)
                         .add("addrtype", String.valueOf(event.addressType))
+                        .add("email", event.email)
+                        .add("fname", event.fname)
+                        .add("lname", event.lname)
+                        .add("phone", event.phone)
                         .build();
                 Request request = new Request.Builder()
                         .url(URL)

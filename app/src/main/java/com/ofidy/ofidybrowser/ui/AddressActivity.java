@@ -1,9 +1,11 @@
 package com.ofidy.ofidybrowser.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -71,8 +73,14 @@ public class AddressActivity extends BaseActivity {
     RadioGroup mDel;
     @Bind(R.id.primary)
     CheckBox mPrimary;
+    @Bind(R.id.fname)
+    EditText fname;
+    @Bind(R.id.lname)
+    EditText lname;
     @Bind(R.id.email)
     EditText mEmail;
+    @Bind(R.id.phone)
+    EditText phone;
 
     //Address object representing current address
     private Address address;
@@ -86,20 +94,33 @@ public class AddressActivity extends BaseActivity {
     private List<State> states;
     private ArrayAdapter stateAdapter;
 
+    private boolean fromCart;
+    private double total;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setLayout(R.layout.activity_address);
 
         Bundle bundle = getIntent().getExtras();
-        if(bundle != null)
-            address = bundle.getParcelable(BundleKeys.ADDRESS);
+        if(bundle != null) {
+            if(bundle.containsKey(BundleKeys.ADDRESS))
+                address = bundle.getParcelable(BundleKeys.ADDRESS);
+            if(bundle.containsKey(BundleKeys.FROM_ACTIVITY)) {
+                fromCart = bundle.getBoolean(BundleKeys.FROM_ACTIVITY);
+                total = bundle.getDouble(BundleKeys.CART_TOTAL);
+            }
+        }
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if (AppState.getInstance(this).getBoolean(AppState.Key.GUEST))
+        if (AppState.getInstance(this).getBoolean(AppState.Key.GUEST)) {
             mEmail.setVisibility(View.VISIBLE);
+            phone.setVisibility(View.VISIBLE);
+            lname.setVisibility(View.VISIBLE);
+            fname.setVisibility(View.VISIBLE);
+        }
 
         savedRegions = OfidyDB.getInstance(this).getRegions();
         if(!savedRegions.isEmpty()){
@@ -271,15 +292,32 @@ public class AddressActivity extends BaseActivity {
         boolean isPrimary = false;
         if(mPrimary.isChecked())
             isPrimary = true;
-        mFlipper.setDisplayedChild(1);
         if (AppState.getInstance(this).getBoolean(AppState.Key.GUEST)) {
             email = mEmail.getText().toString();
+            String fn = fname.getText().toString();
+            if (TextUtils.isEmpty(fn)) {
+                Snackbar.make(mCor, "Please enter your first name", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+            String ln = lname.getText().toString();
+            if (TextUtils.isEmpty(ln)) {
+                Snackbar.make(mCor, "Please enter your last name", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+            String p = phone.getText().toString();
+            if (TextUtils.isEmpty(p)) {
+                Snackbar.make(mCor, "Please enter your phone number", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+            mFlipper.setDisplayedChild(1);
             getBus().post(new AddGuestAddressEvent(addrLine1, addrLine2, area, city, state, country, desc,
-                    postcode, addressType, isPrimary, email));
+                    postcode, addressType, isPrimary, email, fn, ln, p));
         }
-        else
+        else {
+            mFlipper.setDisplayedChild(1);
             getBus().post(new AddEditAddressEvent(addrLine1, addrLine2, area, city, state, country, desc,
                     postcode, addressType, cor, del, isPrimary, address != null));
+        }
     }
 
     /**
@@ -322,5 +360,33 @@ public class AddressActivity extends BaseActivity {
                 mState.setSelection(selectedState);
             states = event.states;
         }
+    }
+
+    /**
+     * Called when back button is pressed in activity.
+     */
+    @Override
+    public void onBackPressed() {
+        if(fromCart){
+            Intent intent = new Intent(this, CheckoutActivity.class);
+            intent.putExtra(BundleKeys.CART_TOTAL, total);
+            startActivity(intent);
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if(fromCart){
+                    Intent intent = new Intent(this, CheckoutActivity.class);
+                    intent.putExtra(BundleKeys.CART_TOTAL, total);
+                    startActivity(intent);
+                }
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
